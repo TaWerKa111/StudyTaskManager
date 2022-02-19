@@ -8,14 +8,14 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ./app:/app
+      - ./taskmanager:/taskmanager
     env_file:
       - .env.dev
     command: >
       sh -c "
         python manage.py makemigrations &&
         python manage.py migrate &&
-        python manage.py runserver"
+        python manage.py runserver 0.0.0.0:8000"
     depends_on:
       - db
 
@@ -23,9 +23,9 @@ services:
   db:
     image: postgres:14
     environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_HOST_AUTH_METHOD=${POSTGRES_HOST_AUTH_METHOD}
+      - POSTGRES_DB=db_name
+      - POSTGRES_USER=db_user
+      - POSTGRES_PASSWORD=db_pass
+      - POSTGRES_HOST_AUTH_METHOD=trust
     ports:
       - "7777:7777"
