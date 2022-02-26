@@ -6,7 +6,7 @@ from .models import (Student, StudentGroup, Stage, Specialization, Discipline,
 # Register your models here.
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = []
+    list_display = ['patronymic', 'number_record_book']
 
 
 @admin.register(StudentGroup)

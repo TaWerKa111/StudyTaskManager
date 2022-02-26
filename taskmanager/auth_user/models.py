@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.exceptions import ObjectDoesNotExist
 
 
 # Create your models here.
@@ -27,9 +28,9 @@ class StudentGroup(models.Model):
 class Student(models.Model):
     """ Студент """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    patronymic = models.CharField(max_length=50)
-    number_record_book = models.CharField(max_length=10)
-    student_group_id = models.ForeignKey(StudentGroup, on_delete=models.CASCADE)
+    patronymic = models.CharField(max_length=50, null=True)
+    number_record_book = models.CharField(max_length=10, null=True)
+    student_group_id = models.ForeignKey(StudentGroup, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.user.get_full_name()
@@ -37,7 +38,9 @@ class Student(models.Model):
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
-    if created:
+    try:
+        instance.student.save()
+    except ObjectDoesNotExist:
         Student.objects.create(user=instance)
 
 
