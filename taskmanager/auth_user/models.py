@@ -1,8 +1,65 @@
+from datetime import datetime, timedelta
+
+import jwt
+
+from django.conf import settings
 from django.db import models
-from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.core import validators
+from django.utils import timezone
+
+from .managers import MyUserManager
+
+
+class MyUser(AbstractBaseUser, PermissionsMixin):
+    USER_TYPES = (
+        ('Student', 'Student'),
+        ('Teacher', 'Teacher')
+    )
+
+    first_name = models.CharField(max_length=120)
+    last_name = models.CharField(max_length=120)
+    surname = models.CharField(max_length=120)
+
+    username = models.CharField(max_length=255)
+    email = models.EmailField(validators=[validators.validate_email], unique=True)
+
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    # is_superuser = models.BooleanField(default=False)
+
+    user_type = models.CharField(max_length=120, choices=USER_TYPES)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    objects = MyUserManager()
+
+    def __str__(self) -> str:
+        return self.username
+
+    def get_full_name(self):
+        return f'{self.first_name} {self.last_name} {self.surname}'
+
+    @property
+    def token(self):
+        return self._generate_jwt_token()
+
+    def get_short_name(self):
+        return f'{self.last_name} {self.first_name}'
+
+    def _generate_jwt_token(self):
+        dt = datetime.now() + timedelta(days=60)
+
+        token = jwt.encode(
+            {
+                'id': self.pk,
+                'type_user': self.user_type,
+                'exp': int(dt.strftime('%s')),
+            },
+            settings.SECRET_KEY, algorithm='HS256'
+        )
+        return jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
 
 
 # Create your models here.
@@ -17,7 +74,7 @@ class Specialization(models.Model):
 
 class StudentGroup(models.Model):
     """ Группа """
-    student_group_id = models.AutoField(primary_key=True)
+    group_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
     specialization_id = models.ForeignKey(Specialization, on_delete=models.CASCADE)
 
@@ -27,31 +84,20 @@ class StudentGroup(models.Model):
 
 class Student(models.Model):
     """ Студент """
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    patronymic = models.CharField(max_length=50, null=True)
-    number_record_book = models.CharField(max_length=10, null=True)
-    student_group_id = models.ForeignKey(StudentGroup, on_delete=models.CASCADE, null=True)
+    user = models.OneToOneField(MyUser, on_delete=models.CASCADE)
+    num_z = models.CharField(max_length=10)
+    group_id = models.ForeignKey(StudentGroup, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return self.user.get_full_name()
+        return self.user.username
 
 
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    try:
-        instance.student.save()
-    except ObjectDoesNotExist:
-        Student.objects.create(user=instance)
+class Teacher(models.Model):
+    """ Преподаватель """
+    user = models.OneToOneField(MyUser, on_delete=models.CASCADE)
 
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.student.save()
-
-
-# class Teacher():
-#     """ Преподаватель """
-#     pass
+    def __str__(self):
+        return self.user.username
 
 
 class Discipline(models.Model):

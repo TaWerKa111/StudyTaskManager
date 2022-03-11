@@ -1,12 +1,18 @@
 from django.contrib import admin
 from .models import (Student, StudentGroup, Stage, Specialization, Discipline,
-                     FormOfControl, AcademicWork, Approach)
+                     FormOfControl, AcademicWork, Approach, Teacher, MyUser)
 
 
 # Register your models here.
+@admin.register(MyUser)
+class MyUserAdmin(admin.ModelAdmin):
+    list_display = ['first_name', 'last_name', 'surname', 'user_type',
+                    'username', 'email']
+
+
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ['patronymic', 'number_record_book']
+    list_display = ['user', 'num_z']
 
 
 @admin.register(StudentGroup)
@@ -24,9 +30,9 @@ class SpecializationAdmin(admin.ModelAdmin):
     list_display = ['name']
 
 
-# @admin.register(Teacher)
-# class SpecializationAdmin(admin.ModelAdmin):
-#     list_display = ['']
+@admin.register(Teacher)
+class TeacherAdmin(admin.ModelAdmin):
+    list_display = ['user']
 
 
 @admin.register(Discipline)

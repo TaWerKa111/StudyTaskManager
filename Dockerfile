@@ -5,9 +5,10 @@ FROM python:3.8.3-alpine
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+
 # install psycopg2 dependencies
 RUN apk update \
-    && apk add postgresql-dev gcc python3-dev musl-dev
+    && apk add postgresql-dev gcc python3-dev musl-dev libxml2-dev libxslt-dev libc-dev make git libffi-dev
 
 # install dependencies
 RUN pip install --upgrade pip
