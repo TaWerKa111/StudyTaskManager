@@ -50,7 +50,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'auth_user',
     'rest_framework',
-    'djoser'
+    'djoser',
+    'corsheaders',
+    'showinfo',
 ]
 
 MIDDLEWARE = [
@@ -82,23 +84,22 @@ TEMPLATES = [
     },
 ]
 
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-        ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
-}
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': (
+#         'rest_framework.permissions.IsAuthenticated',
+#         ),
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'rest_framework_simplejwt.authentication.JWTAuthentication',
+#     )
+# }
 
 WSGI_APPLICATION = 'taskmanager.wsgi.application'
 
 
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_ALLOW_ALL = True
 
-# CORS_ORIGIN_WHITELIST = (
-#     '*'
-# )
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000']
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases

@@ -6,7 +6,7 @@ from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.core import validators
-from django.utils import timezone
+# from django.utils import timezone
 
 from .managers import MyUserManager
 
@@ -36,7 +36,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     objects = MyUserManager()
 
     def __str__(self) -> str:
-        return self.username
+        return str(self.username)
 
     def get_full_name(self):
         return f'{self.first_name} {self.last_name} {self.surname}'
@@ -88,7 +88,7 @@ class Student(models.Model):
     num_z = models.CharField(max_length=10)
     group_id = models.ForeignKey(StudentGroup, on_delete=models.CASCADE, null=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.user.username
 
 
@@ -96,7 +96,7 @@ class Teacher(models.Model):
     """ Преподаватель """
     user = models.OneToOneField(MyUser, on_delete=models.CASCADE)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.user.username
 
 
@@ -125,6 +125,7 @@ class AcademicWork(models.Model):
     student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
     discipline_id = models.ForeignKey(Discipline, on_delete=models.CASCADE)
     form_of_control_id = models.ForeignKey(FormOfControl, on_delete=models.CASCADE)
+    teacher_id = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.name
@@ -135,7 +136,10 @@ class Stage(models.Model):
     stage_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
     academic_work_id = models.ForeignKey(AcademicWork, on_delete=models.CASCADE)
-    parent_stage_id = models.ForeignKey('self', on_delete=models.CASCADE)
+    parent_stage_id = models.ForeignKey('self', blank=True, null=True, on_delete=models.CASCADE)
+    is_pass = models.BooleanField(default=False)
+    planned_date = models.DateField(default=datetime.today)
+    actually_date = models.DateField(null=True, default=datetime.today)
 
     def __str__(self):
         return self.name
@@ -147,7 +151,31 @@ class Approach(models.Model):
     stage_id = models.ForeignKey(Stage, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     comment = models.CharField(max_length=50)
-    date = models.DateField()
+    date = models.DateField(default=datetime.today)
 
     def __str__(self):
         return self.name
+
+
+class NameTemplate(models.Model):
+    """ Название шаблона """
+    template_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    teacher_id = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+
+class TemplateStage(models.Model):
+    """ Шаблоны самих этапов """
+    stage_id = models.AutoField(primary_key=True)
+    parent_id = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    duration = models.IntegerField(default=30)
+
+    template_id = models.ForeignKey(NameTemplate, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+

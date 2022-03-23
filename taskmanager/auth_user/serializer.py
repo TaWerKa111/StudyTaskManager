@@ -17,6 +17,7 @@ from django.contrib.auth import authenticate
 
 
 class LogInSerializer(serializers.ModelSerializer):
+
     email = serializers.EmailField(write_only=True)
     password = serializers.CharField(max_length=128, write_only=True)
 
