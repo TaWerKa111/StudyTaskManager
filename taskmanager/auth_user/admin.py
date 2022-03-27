@@ -1,12 +1,12 @@
 from django.contrib import admin
 from .models import (Student, StudentGroup, Stage, Specialization, Discipline,
-                     FormOfControl, AcademicWork, Approach, Teacher, MyUser)
+                     FormOfControl, AcademicWork, Approach, Teacher, MyUser, TemplateStage, NameTemplate)
 
 
 # Register your models here.
 @admin.register(MyUser)
 class MyUserAdmin(admin.ModelAdmin):
-    list_display = ['first_name', 'last_name', 'surname', 'user_type',
+    list_display = ['id', 'first_name', 'last_name', 'surname', 'user_type',
                     'username', 'email']
 
 
@@ -53,3 +53,13 @@ class AcademicWorkAdmin(admin.ModelAdmin):
 @admin.register(Approach)
 class ApproachAdmin(admin.ModelAdmin):
     list_display = ['stage_id', 'name', 'comment', 'date']
+
+
+@admin.register(TemplateStage)
+class TemplateStageAdmin(admin.ModelAdmin):
+    list_display = ['stage_id', 'name', 'parent_id', 'duration', 'template_id']
+
+
+@admin.register(NameTemplate)
+class NameTemplateAdmin(admin.ModelAdmin):
+    list_display = ['template_id', 'name', 'teacher_id']

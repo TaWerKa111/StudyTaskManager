@@ -4,6 +4,8 @@ from auth_user.models import Stage, Teacher, \
     AcademicWork, Approach, \
     Student, Specialization, StudentGroup
 
+from .models import TemplateStage, NameTemplate
+
 
 class StageSerializer(serializers.ModelSerializer):
     """ Сериализатор для модели Этап """
@@ -79,5 +81,19 @@ class SpecializationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class TemplateStageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TemplateStage
+        fields = '__all__'
+
+    # def create(self, validated_data):
+    #     return NameTemplate.objects.create(**validated_data)
 
 
+class NameTemplateStageSerializer(serializers.ModelSerializer):
+    # template_stage = TemplateStageSerializer(read_only=True)
+
+    class Meta:
+        model = NameTemplate
+        fields = '__all__'

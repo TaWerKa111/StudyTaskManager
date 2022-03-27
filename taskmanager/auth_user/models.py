@@ -166,6 +166,9 @@ class NameTemplate(models.Model):
     def __str__(self):
         return self.name
 
+    def print_name(self):
+        print(self.name)
+
 
 class TemplateStage(models.Model):
     """ Шаблоны самих этапов """
@@ -178,4 +181,5 @@ class TemplateStage(models.Model):
 
     def __str__(self):
         return self.name
+
 
