@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import AcademicWorks
+from .views import AcademicWorksView
 
 urlpatterns = [
-    path('academs/<int:pk>', AcademicWorks.as_view(), name='student`s works'),
+    path('academs/<int:pk>', AcademicWorksView.as_view(), name='student`s works'),
 ]

@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from rest_framework.views import APIView
 from typing import List, Dict
 
@@ -11,17 +11,9 @@ from .serializers import SpecializationSerializer, Specialization
 from .serializers import Stage, StageSerializer
 from .serializers import StudentGroup, StudentGroupSerializer
 
-from .services import academic_work_detail_by_id, get_template_by_teacher_id, create_template_name, \
-    get_template_by_id, update_template_name, delete_template_name, add_stages_by_name_template
-
-
-class StageView(APIView):
-    """ Вывод всех этапов по гет запросу """
-
-    def get(self, request):
-        stages = Stage.objects.all()
-        serializer = StageSerializer(data=stages, many=True)
-        return Response(serializer.data, status=HTTP_200_OK)
+from .services import get_template_by_teacher_id, create_template_name, \
+    get_template_by_id, update_template_name, delete_template_name, add_stages_by_name_template,\
+    MainNameTemplate, MainTeacher, MainTemplateStage, MainDiscipline, MainAcademicWork, teacher, template_detail
 
 
 class StudentGroupView(APIView):
@@ -50,15 +42,6 @@ class DisciplineView(APIView):
         return Response(serializer.data, status=HTTP_200_OK)
 
 
-class ApproachView(APIView):
-    """ Вывод всех подходов по гет запросу """
-
-    def get(self, request):
-        approach = Approach.objects.all()
-        serializer = ApproachSerializer(approach, many=True)
-        return Response(serializer.data, status=HTTP_200_OK)
-
-
 class FormOfControlView(APIView):
     """ Вывод всех способов проверки знаний по гет запросу """
 
@@ -75,7 +58,6 @@ class AcademicWorkView(APIView):
         params = request.query_params
 
         if params:
-
             group_id = params.get('group_id', None)
             form_of_control_id = params.get('form', None)
             full_name = params.get('name', None)
@@ -103,34 +85,73 @@ class AcademicWorkDetailView(APIView):
     """
 
     def get(self, request, pk):
-        stages = academic_work_detail_by_id(pk)
+        academic_work = MainAcademicWork(pk)
+        stages = academic_work.academ_work_detail()
         return Response(stages, status=HTTP_200_OK)
 
 
 class AcademicWorkForTeacherView(APIView):
-
     def get(self, request,  **kwargs):
         id_teacher = kwargs.get('pk')
 
-        academic_work = AcademicWork.objects.select_related('student_id').filter(teacher_id=id_teacher)
-        academic_work_ser = AcademicWorkWithStudentSerializer(academic_work, many=True)
+        teacher = MainTeacher(id_teacher)
+        academ_work = teacher.get_academic_work()
 
-        return Response(academic_work_ser.data, status=HTTP_200_OK)
+        return Response(academ_work, status=HTTP_200_OK)
+
+    def post(self):
+        pass
+
+    def put(self):
+        pass
+
+    def delete(self):
+        pass
 
 
 class TemplateView(APIView):
     """ Вывод всех шаблон для преподавателя по его идентификатору """
     def get(self, request, **kwargs):
         teacher_id = kwargs.get('pk')
-        templates = get_template_by_teacher_id(teacher_id)
-        return Response(templates, status=HTTP_200_OK)
+        try:
+            templates = teacher(teacher_id)
+            return Response(templates, status=HTTP_200_OK)
+        except:
+            return Response({'message': 'Такого преподавателя нет!'}, status=HTTP_400_BAD_REQUEST)
+
+    def put(self, request, **kwargs):
+        data = request.data
+        template_id = data.get('template_id')
+        template = MainNameTemplate(template_id)
+        template = template.update(data)
+        return Response(template, status=HTTP_200_OK)
+
+    def delete(self, request, **kwargs):
+        template_id = request.data.get('template_id')
+        template = MainNameTemplate(template_id)
+        if template.delete():
+            return Response({'message': 'Удалено успешно!'}, status=HTTP_200_OK)
+        return Response({'message': 'Объект не найден'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+    def post(self, request, **kwargs):
+        data = request.data
+        teacher_id = kwargs.get('pk')
+        try:
+            MainNameTemplate.create(data)
+            templates = teacher(teacher_id)
+            return Response(templates, HTTP_200_OK)
+        except:
+            return Response({'message': 'Error'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class TemplateDetailView(APIView):
     """ Вывод информации по кокретному шаблону. Добавление шаблона и изменение информации по нему """
+
     def get(self, request, **kwargs):
         template_id = kwargs.get('pk')
-        templates = get_template_by_id(template_id)
+        template = MainNameTemplate(template_id)
+        templates = template.get_stages()
         return Response(templates, status=HTTP_200_OK)
 
     def put(self, request, **kwargs):
@@ -140,8 +161,8 @@ class TemplateDetailView(APIView):
         return Response(template, status=HTTP_200_OK)
 
     def delete(self, request, **kwargs):
-        template_id = kwargs.get('pk')
-        result = delete_template_name(template_id)
+        data = request.data.get('stages_id')
+        result = MainNameTemplate.delete_stages(data)
         result_data = {'result': result}
         if result:
             return Response(result_data, status=HTTP_200_OK)

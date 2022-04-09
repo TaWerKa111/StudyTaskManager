@@ -126,6 +126,7 @@ class AcademicWork(models.Model):
     discipline_id = models.ForeignKey(Discipline, on_delete=models.CASCADE)
     form_of_control_id = models.ForeignKey(FormOfControl, on_delete=models.CASCADE)
     teacher_id = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True)
+    is_complited = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

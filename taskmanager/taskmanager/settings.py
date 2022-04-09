@@ -22,7 +22,7 @@ env = environ.Env(
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+environ.Env.read_env(os.path.join(BASE_DIR, '../.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -105,7 +105,16 @@ CORS_ORIGIN_WHITELIST = [
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db(),
+    "default": {
+        "ENGINE": os.environ.get("SQL_ENGINE",
+                                 "django.db.backends.sqlite3"),
+        "NAME": os.environ.get("DB_NAME", os.path.join(BASE_DIR,
+                                                            "db.sqlite3")),
+        "USER": os.environ.get("DB_USER", "user"),
+        "PASSWORD": os.environ.get("DB_PASS", "password"),
+        "HOST": os.environ.get("DB_HOST", "localhost"),
+        "PORT": os.environ.get("SQL_PORT", "5432"),
+    }
 }
 
 
