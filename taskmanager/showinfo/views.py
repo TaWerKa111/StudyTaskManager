@@ -209,9 +209,12 @@ class AcademicWorkDetailView(APIView):
     """
 
     def get(self, request, pk):
-        academic_work = MainAcademicWork(pk)
-        stages = academic_work.academ_work_detail()
-        return Response(stages, status=HTTP_200_OK)
+        try:
+            academic_work = MainAcademicWork(pk)
+            stages = academic_work.academ_work_detail()
+            return Response(stages, status=HTTP_200_OK)
+        except:
+            return Response({'result': False, 'message': 'Нет академической работы!'})
 
 
 class AcademicWorkForTeacherView(APIView):
@@ -261,11 +264,13 @@ class AcademicWorkForTeacherView(APIView):
         Получение работ студентов по идентификатору преподавателя.
         """
         id_teacher = kwargs.get('pk')
+        try:
+            teacher = MainTeacher(id_teacher)
+            academ_work = teacher.get_academic_work()
 
-        teacher = MainTeacher(id_teacher)
-        academ_work = teacher.get_academic_work()
-
-        return Response(academ_work, status=HTTP_200_OK)
+            return Response(academ_work, status=HTTP_200_OK)
+        except:
+            return Response({'result': False, 'message': 'Такого преподавателя нет!'}, status=HTTP_200_OK)
 
     def post(self, request, **kwargs):
         """
@@ -279,13 +284,16 @@ class AcademicWorkForTeacherView(APIView):
                 "discipline_id": 1     pk дисциплины
             }
         """
-        id_teacher = kwargs.get('pk')
-        data = request.data
-        teacher = MainTeacher(id_teacher)
-        create_academic_work(teacher.model, data)
-        academ_work = teacher.get_academic_work()
+        try:
+            id_teacher = kwargs.get('pk')
+            data = request.data
+            teacher = MainTeacher(id_teacher)
+            create_academic_work(teacher.model, data)
+            academ_work = teacher.get_academic_work()
 
-        return Response(academ_work, status=HTTP_200_OK)
+            return Response(academ_work, status=HTTP_200_OK)
+        except:
+            return Response({'result': False, 'message': 'Такого преподавателя нет!'}, status=HTTP_200_OK)
 
     def put(self):
         pass
@@ -573,8 +581,12 @@ class ApproachView(APIView):
 
         """
         data = request.data
-        result = MainApproach.create(data)
-        return Response({'result': result}, status=HTTP_200_OK)
+        try:
+            invoker = Invoker(AddCommand(MainApproach, data))
+            invoker.invoke()
+            return Response({'result': True}, status=HTTP_200_OK)
+        except Exception as ex:
+            return Response({'message': ex.__str__()}, status=HTTP_200_OK)
 
     def put(self, request, **kwargs):
         """
@@ -589,9 +601,13 @@ class ApproachView(APIView):
             -result: результат изменения данных
         """
         data = request.data
-        approach = MainApproach(data['approach_id'])
-        result = approach.update(data)
-        return Response({'result': result}, status=HTTP_200_OK)
+        try:
+            approach = MainApproach(data['approach_id'])
+            invoker = Invoker(UpdateCommand(approach, data))
+            invoker.invoke()
+            return Response({'result': True}, status=HTTP_200_OK)
+        except Exception as ex:
+            return Response({'message': ex.__str__()}, status=HTTP_200_OK)
 
     def delete(self, request, **kwargs):
         """
@@ -602,10 +618,14 @@ class ApproachView(APIView):
             - approach: объект класса MainApproach
             - result: результат удаления подхода.
         """
-        data = request.data
-        approach = MainApproach(data['approach_id'])
-        result = approach.delete()
-        return Response({'result': result}, status=HTTP_200_OK)
+        try:
+            data = request.data
+            approach = MainApproach(data['approach_id'])
+            invoker = Invoker(DeleteCommand(approach))
+            invoker.invoke()
+            return Response({'result': True}, status=HTTP_200_OK)
+        except Exception as ex:
+            return Response({'message': False}, status=HTTP_200_OK)
 
 
 class StageView(APIView):
