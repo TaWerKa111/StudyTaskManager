@@ -17,7 +17,7 @@ class StudentAdmin(admin.ModelAdmin):
 
 @admin.register(StudentGroup)
 class StudentGroupAdmin(admin.ModelAdmin):
-    list_display = ['name', 'specialization_id']
+    list_display = ['group_id', 'name', 'specialization_id']
 
 
 @admin.register(Stage)
@@ -32,7 +32,7 @@ class SpecializationAdmin(admin.ModelAdmin):
 
 @admin.register(Teacher)
 class TeacherAdmin(admin.ModelAdmin):
-    list_display = ['user']
+    list_display = ['pk', 'user']
 
 
 @admin.register(Discipline)

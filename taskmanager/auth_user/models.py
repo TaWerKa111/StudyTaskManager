@@ -6,7 +6,6 @@ from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.core import validators
-# from django.utils import timezone
 
 from .managers import MyUserManager
 
@@ -62,9 +61,14 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         return jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
 
 
-# Create your models here.
 class Specialization(models.Model):
-    """ Специальность """
+    """
+    Специальность
+
+    Атрибуты:
+        - specialization_id: primary key
+        - name: название специальности
+    """
     specialization_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
 
@@ -73,7 +77,14 @@ class Specialization(models.Model):
 
 
 class StudentGroup(models.Model):
-    """ Группа """
+    """
+    Группа
+
+    Атрибуты:
+        - group_id: primary key
+        - name: название группы
+        - specialization_id: внешний ключ к таблице Specialization
+    """
     group_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
     specialization_id = models.ForeignKey(Specialization, on_delete=models.CASCADE)
@@ -83,17 +94,29 @@ class StudentGroup(models.Model):
 
 
 class Student(models.Model):
-    """ Студент """
+    """
+    Студент
+
+    Атрибуты:
+        - user: внешний ключ с таблицей User
+        - num_z: номер зачетной книжки
+        - group_id: внешний ключ к таблице StudentGroup
+    """
     user = models.OneToOneField(MyUser, on_delete=models.CASCADE)
     num_z = models.CharField(max_length=10)
     group_id = models.ForeignKey(StudentGroup, on_delete=models.CASCADE, null=True)
 
     def __str__(self) -> str:
-        return self.user.username
+        return f'{self.user.first_name} {self.user.last_name}'
 
 
 class Teacher(models.Model):
-    """ Преподаватель """
+    """
+    Преподаватель
+
+    Атрибуты:
+        - user: внешний ключ к таблице User
+    """
     user = models.OneToOneField(MyUser, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
@@ -101,7 +124,13 @@ class Teacher(models.Model):
 
 
 class Discipline(models.Model):
-    """ Дисциплина """
+    """
+    Дисциплина
+
+    Атрибуты:
+        - discipline_id: primary key
+        - name: название дисциплины
+    """
     discipline_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
 
@@ -110,7 +139,13 @@ class Discipline(models.Model):
 
 
 class FormOfControl(models.Model):
-    """ Тип работы. Форма контроля. """
+    """
+    Тип работы. Форма контроля.
+
+    Атрибуты:
+        - form_of_control_id: primary key
+        - name: название формы контроля (РГР, Курсовая)
+    """
     form_of_control_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
 
@@ -119,7 +154,17 @@ class FormOfControl(models.Model):
 
 
 class AcademicWork(models.Model):
-    """ Учебная работа """
+    """
+    Учебная работа
+
+    Атрибуты:
+        - academic_work_id: primary key
+        - name: название учебной работы
+        - student_id: внешний ключ к таблице Student
+        - discipline_id: внешний ключ к таблице Discipline
+        - form_of_control_id: внешний ключ к таблице FromOfControl
+        - is_complited: закончена работа или нет.
+    """
     academic_work_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
     student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -133,7 +178,18 @@ class AcademicWork(models.Model):
 
 
 class Stage(models.Model):
-    """ Этап работы """
+    """
+    Этап работы
+
+    Атрибуты:
+        - stage_id: primary key
+        - name: название этапа работы
+        - academic_work_id: внешний ключ к таблице AcademicWork
+        - parent_stage_id: Является ли данный этап подэтапом (Если None - то данный этап родитель)
+        - is_pass: сдан ли данный этап (True - да, False - нет)
+        - planned_data: планируема дата сдачи
+        - actually_date: действительная дата сдача (т.е. день в который сдали работу)
+    """
     stage_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
     academic_work_id = models.ForeignKey(AcademicWork, on_delete=models.CASCADE)
@@ -147,7 +203,16 @@ class Stage(models.Model):
 
 
 class Approach(models.Model):
-    """ Подходы """
+    """
+    Подходы
+
+    Атрибуты:
+        - approach_id: primary key
+        - stage_id: внешний ключ к таблице этап
+        - name: название подхода
+        - comment: комментарий к подходу
+        - data: дата сдачи подхода
+    """
     approach_id = models.AutoField(primary_key=True)
     stage_id = models.ForeignKey(Stage, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
@@ -159,7 +224,14 @@ class Approach(models.Model):
 
 
 class NameTemplate(models.Model):
-    """ Название шаблона """
+    """
+    Название шаблона
+
+    Атрибуты:
+        - template_id: primary key
+        - name: название шаблона
+        - teacher_id: внешний ключ к таблице Teacher
+    """
     template_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     teacher_id = models.ForeignKey(Teacher, on_delete=models.CASCADE)
@@ -172,7 +244,16 @@ class NameTemplate(models.Model):
 
 
 class TemplateStage(models.Model):
-    """ Шаблоны самих этапов """
+    """
+    Шаблоны самих этапов
+
+    Атрибуты:
+        - stage_id: primary key
+        - parent_id: ссылка на stage_id, родителя, если данный этап является дочерним, иначе none
+        - name: название этапа
+        - duration_id: продолжительность этапа
+        - template_id: внешний ключ к таблице NameTemplate
+    """
     stage_id = models.AutoField(primary_key=True)
     parent_id = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
@@ -182,5 +263,3 @@ class TemplateStage(models.Model):
 
     def __str__(self):
         return self.name
-
-

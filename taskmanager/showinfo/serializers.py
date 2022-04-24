@@ -22,6 +22,7 @@ class StudentGroupSerializer(serializers.ModelSerializer):
 
 
 class StudentSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Студент"""
     class Meta:
         model = Student
         fields = '__all__'
@@ -49,7 +50,7 @@ class AcademicWorkSerializer(serializers.ModelSerializer):
 
 
 class AcademicWorkWithStudentSerializer(serializers.ModelSerializer):
-    """ Сериализатор для модели Учебная работа  и студент"""
+    """ Сериализатор для модели Учебная работа и студент"""
     student_id = StudentSerializer(read_only=True)
 
     class Meta:
@@ -58,7 +59,7 @@ class AcademicWorkWithStudentSerializer(serializers.ModelSerializer):
 
 
 class ApproachSerializer(serializers.ModelSerializer):
-    """ Сериализатор для модели Поход """
+    """ Сериализатор для модели Подход """
     model1 = StageSerializer(read_only=True)
 
     class Meta:
@@ -82,7 +83,7 @@ class SpecializationSerializer(serializers.ModelSerializer):
 
 
 class TemplateStageSerializer(serializers.ModelSerializer):
-
+    """ Сериализотор для модели этап шаблона """
     class Meta:
         model = TemplateStage
         fields = '__all__'
@@ -92,8 +93,8 @@ class TemplateStageSerializer(serializers.ModelSerializer):
 
 
 class NameTemplateStageSerializer(serializers.ModelSerializer):
+    """ Сериализотор для модели этап шаблона """
     # template_stage = TemplateStageSerializer(read_only=True)
-
     class Meta:
         model = NameTemplate
         fields = '__all__'
