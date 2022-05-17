@@ -1,0 +1,27 @@
+a:hover {
+    color: #C4889F
+}
+
+body {
+    background-color: #F8B2A1;
+}
+
+.element-form {
+    background-color: #F8B2A1;
+    margin-top: 1%;
+    margin-bottom: 1%;
+}
+
+
+label{
+    margin-right: 10px;
+}
+
+button {
+    margin: 1%;
+    padding: 100px;
+}
+
+.form-template {
+    margin: 1%;
+}
