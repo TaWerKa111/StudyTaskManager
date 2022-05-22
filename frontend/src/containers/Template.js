@@ -46,6 +46,7 @@ const Template = () => {
 
     const onChangeIdTemplate = e => setIdTemplate(e.target.value);
     const navigate = useNavigate();
+
     const goToDetailTemplate = () => {
         navigate(`/template_detail/${idTemplate}`);
     }

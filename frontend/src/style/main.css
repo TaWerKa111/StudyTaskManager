@@ -25,3 +25,12 @@ button {
 .form-template {
     margin: 1%;
 }
+
+.work-row:hover {
+    background-color: #2a95c7;
+    cursor: pointer;
+}
+
+.main-content {
+    margin-bottom: 40px;
+}

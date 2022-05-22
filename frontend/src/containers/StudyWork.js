@@ -4,9 +4,10 @@ import WorkDetail from "../Objects/WorkDetail";
 import axios from "axios";
 const MAIN_URL = 'http://127.0.0.1:8000';
 
-const StudyWork = ( { name } ) => {
+const StudyWork = ( { } ) => {
     const params = useParams();
     let name1 = params.name;
+    console.log(name1)
 
     const [workDetail, setWorkList] = useState([])
 

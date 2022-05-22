@@ -37,10 +37,10 @@ class App extends Component {
                 <Router>
                     <Layout>
                         <Routes>
-                            <Route exact path="/" element={<Home onChange={this.handleNameChange}/>}/>
+                            <Route exact path="/" element={<Home/>}/>
                             <Route exact path="/templates/:id/" element={<Template name={this.name}/>}/>
                             <Route exact path="/template_detail/:id/" element={<TemplateDetail/>}/>
-                            <Route exact path="/study_work/:name/" element={<StudyWork name={this.name}/>}/>
+                            <Route exact path="/study_work/:name/" element={<StudyWork/>}/>
                             <Route exact path="/create_template/" element={<CreateTemp/>}/>
                             {/*<Route exact path='/login' element={<Login/>} />*/}
                             {/*<Route exact path='/activate' element={<Activate/>} />*/}
