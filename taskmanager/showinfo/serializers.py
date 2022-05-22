@@ -2,9 +2,18 @@ from rest_framework import serializers
 from auth_user.models import Stage, Teacher, \
     Discipline, FormOfControl, \
     AcademicWork, Approach, \
-    Student, Specialization, StudentGroup
+    Student, Specialization, StudentGroup, MyUser
 
 from .models import TemplateStage, NameTemplate
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели пользователь.
+    """
+    class Meta:
+        model = MyUser
+        fields = ['first_name', 'last_name']
 
 
 class StageSerializer(serializers.ModelSerializer):
@@ -23,6 +32,8 @@ class StudentGroupSerializer(serializers.ModelSerializer):
 
 class StudentSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Студент"""
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = Student
         fields = '__all__'
@@ -52,6 +63,8 @@ class AcademicWorkSerializer(serializers.ModelSerializer):
 class AcademicWorkWithStudentSerializer(serializers.ModelSerializer):
     """ Сериализатор для модели Учебная работа и студент"""
     student_id = StudentSerializer(read_only=True)
+    discipline_id = DisciplineSerializer(read_only=True)
+    form_of_control_id = FormOfControlSerializer(read_only=True)
 
     class Meta:
         model = AcademicWork

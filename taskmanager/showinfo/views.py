@@ -77,6 +77,7 @@ class DisciplineView(APIView):
             }
         ]
     """
+
     def get(self, request):
         disciplines = Discipline.objects.all()
         serializer = DisciplineSerializer(disciplines, many=True)

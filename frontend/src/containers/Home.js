@@ -150,20 +150,6 @@ const Home = () => {
 
     return(
         <div className='container main-content'>
-            {/*<div className='row'>*/}
-            {/*    <div className='col-md'>*/}
-            {/*        <form className='form-control element-form'>*/}
-            {/*            <div className='form-group'>*/}
-            {/*                <label>Введите id учебной работы:  </label>*/}
-            {/*                <input type={"text"}*/}
-            {/*                    name={'idWork'}*/}
-            {/*                    value={idWork}*/}
-            {/*                    onChange={e => onChange1(e)}*/}
-            {/*                /></div>*/}
-            {/*            <button className='btn btn-primary' type='submit' onClick={goToStudy}>Перейти на страницу работы</button>*/}
-            {/*        </form>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
             <div className='row'>
                 <div className='col-md'>
                     <div className=' form-control element-form'>

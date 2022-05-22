@@ -47,7 +47,7 @@ class FormOfControlAdmin(admin.ModelAdmin):
 
 @admin.register(AcademicWork)
 class AcademicWorkAdmin(admin.ModelAdmin):
-    list_display = ['name', 'student_id', 'discipline_id', 'form_of_control_id']
+    list_display = ['academic_work_id', 'name', 'student_id', 'discipline_id', 'form_of_control_id']
 
 
 @admin.register(Approach)
