@@ -39,6 +39,7 @@ ALLOWED_HOSTS = [
     '*',
 ]
 
+REST_FRAMEWORK = { 'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema' }
 
 # Application definition
 
@@ -104,6 +105,14 @@ CORS_ORIGIN_WHITELIST = [
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
+
+print(os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"))
+print(os.environ.get("DB_NAME", os.path.join(BASE_DIR,
+                                                            "db.sqlite3")))
+print(os.environ.get("DB_USER", "user"))
+print(os.environ.get("DB_PASS", "password"))
+print(os.environ.get("DB_HOST", "localhost"))
+print(os.environ.get("SQL_PORT", "5432"))
 
 DATABASES = {
     "default": {

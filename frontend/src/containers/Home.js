@@ -62,6 +62,37 @@ const Home = () => {
 
     const onChangeFormOfControl= (newValue) => {
         setFormOfControl(newValue.value)
+        let formOfControl = newValue.value
+
+        if (formOfControl === '') {
+            console.log(studyWorks)
+            setFilterStudyWorks(studyWorks)
+            return null
+        }
+
+        let temp = []
+        if (filterStudyWorks) {
+            filterStudyWorks.forEach(
+                function (studyWork) {
+                    if (studyWork.form_of_control_id.form_of_control_id === formOfControl){
+                        temp.push(studyWork)
+                    }
+                }
+            )
+
+        }
+        else {
+            studyWorks.forEach(
+                function (studyWork){
+                    if (studyWork.form_of_control_id.form_of_control_id === formOfControl){
+                        temp.push(studyWork)
+                    }
+            })
+
+        }
+
+        setFilterStudyWorks(temp)
+
     }
 
     const [discipline, setDiscipline] = useState('')
@@ -78,7 +109,9 @@ const Home = () => {
 
     const onChangeName = (e) => {
         setName(e.target.value)
+
         let temp = []
+
         studyWorks.forEach(
             function (work){
                 if (work.name.includes(e.target.value)){
@@ -86,8 +119,9 @@ const Home = () => {
                 }
             }
         )
+
         setFilterStudyWorks(temp)
-        console.log(studyWorks)
+
     }
 
     const setDisciplineOptionsFunc = (disciplineList) => {
@@ -132,7 +166,7 @@ const Home = () => {
         .catch(e => console.log(e))
         setStudyWorks(filterStudyWorks);
 
-        console.log(studyWorks);
+        console.log("Study work = ", studyWorks);
 
         axios.get(MAIN_URL + '/teach/api/disc/')
             .then(response => setDisciplineOptionsFunc(response.data))
